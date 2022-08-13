@@ -1,0 +1,44 @@
+###
+## 創建 task
+POST http://localhost:8080/api/task/create
+Content-Type: application/json;charset=utf-8
+
+{
+  "title": "代辦事項1",
+  "description": "明天來去爬山",
+  "startDate": "1642348800000",
+  "deprecateDate": "1642348800000",
+  "imageUrls": [
+    "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Y2F0fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+    "https://images.unsplash.com/photo-1573865526739-10659fec78a5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=830&q=80"
+  ]
+}
+
+###
+## 取得單一 task
+#GET api/task/{Task.id}
+GET http://localhost:8080/api/task/62f729fad7f4390fb1801e63
+Content-Type: application/json;charset=utf-8
+
+###
+## 取得 task 列表搜尋結果分頁
+#GET api/task/list?keyword={我是搜尋關鍵字}&page={page}&show={show}&since={milisecond}&until={milisecond}
+GET http://localhost:8080/api/task/list?keyword=爬山&page=1&show=10&since=1640966400000&until=32472115200000
+Content-Type: application/json;charset=utf-8
+
+###
+## 更新 task
+PUT http://localhost:8080/api/task/62f72997d7f4390fb1801e60/update-state
+Content-Type: application/json;charset=utf-8
+
+{
+  "id": "62f72997d7f4390fb1801e60",
+  "title": "代辦事項777",
+  "description": "明天來去爬山777",
+  "startDate": "1642348800000",
+  "deprecateDate": "1642348800000",
+  "imageUrls": [
+    "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Y2F0fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+    "https://images.unsplash.com/photo-1573865526739-10659fec78a5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=830&q=80"
+  ]
+}
