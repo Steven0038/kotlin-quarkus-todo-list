@@ -28,11 +28,11 @@ Content-Type: application/json;charset=utf-8
 
 ###
 ## 更新 task
-PUT http://localhost:8080/api/task/62f72997d7f4390fb1801e60/update-state
+PUT http://localhost:8080/api/task/62f8a61ca5fb933f507fd6f1/update
 Content-Type: application/json;charset=utf-8
 
 {
-  "id": "62f72997d7f4390fb1801e60",
+  "id": "62f8a61ca5fb933f507fd6f1",
   "title": "代辦事項777",
   "description": "明天來去爬山777",
   "startDate": "1642348800000",

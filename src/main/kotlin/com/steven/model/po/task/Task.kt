@@ -4,6 +4,7 @@ import com.steven.model.dto.TaskCreateDTO
 import com.steven.model.po.BaseMongoEntity
 import io.quarkus.mongodb.panache.common.MongoEntity
 import org.bson.types.ObjectId
+import org.eclipse.microprofile.openapi.annotations.media.Schema
 import java.time.Instant
 import java.util.*
 
@@ -11,6 +12,7 @@ import java.util.*
  * 代辦工作
  */
 @MongoEntity
+@Schema(name = "Task", description = "Task representation")
 data class Task(
 
 
@@ -36,9 +38,6 @@ data class Task(
      */
     var state: String? = null,
 
-    /**
-     * [User.id]
-     */
     var userId: ObjectId? = null,
 
     /**

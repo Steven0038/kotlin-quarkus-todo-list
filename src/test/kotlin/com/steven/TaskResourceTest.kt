@@ -91,7 +91,7 @@ class TaskResourceTestTest {
             )
                 .contentType("application/json")
         } When {
-            put("/api/task/$uid/update-state")
+            put("/api/task/$uid/update")
         } Then {
             statusCode(200)
             body(
