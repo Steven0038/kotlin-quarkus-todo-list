@@ -10,7 +10,6 @@ import com.steven.repository.TaskRepository
 import io.smallrye.mutiny.coroutines.awaitSuspending
 import org.bson.types.ObjectId
 import java.time.Instant
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -55,13 +54,14 @@ class TaskService {
     suspend fun listTaskPageWithFilter(pageReq: PageRequest, keyword: String?, since: Long?, until: Long?): List<Task> {
         val page = pageReq.page
         val show = pageReq.show
+        val searchKey = keyword?.takeIf { it.isNotBlank() } ?: ""
         val startDate = since?.let { Instant.ofEpochMilli(it) } ?: Instant.ofEpochMilli(0)
         val endDate = until?.let { Instant.ofEpochMilli(it) } ?: Instant.ofEpochMilli(32472115200000)
 
         return taskRepo.find(
             "${Task::title.name} like ?1 or ${Task::description.name} like ?2 "
                     + "and ${Task::createdTime.name} >= ?3 and ${Task::createdTime.name} <= ?4",
-            keyword, keyword, startDate, endDate
+            searchKey, searchKey, startDate, endDate
         )
             .page(page - 1, show).list()
             .awaitSuspending()
