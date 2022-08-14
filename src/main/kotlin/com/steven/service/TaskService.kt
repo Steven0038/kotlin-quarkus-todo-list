@@ -1,5 +1,7 @@
 package com.steven.service
 
+import arrow.core.Either
+import com.steven.exception.GlobalException
 import com.steven.model.dto.PageRequest
 import com.steven.model.dto.TaskCreateDTO
 import com.steven.model.po.task.Task
@@ -8,7 +10,6 @@ import com.steven.repository.TaskRepository
 import io.smallrye.mutiny.coroutines.awaitSuspending
 import org.bson.types.ObjectId
 import java.time.Instant
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,14 +27,16 @@ class TaskService {
      * admin create initial [Task]
      *
      * @param dto [TaskCreateDTO]
-     * @param adminUserId [User.id]
+     * @param adminUserId
      *
      * @return [Task]
      */
     suspend fun creatTaskByDto(
         dto: TaskCreateDTO,
         adminUserId: ObjectId
-    ): Task = taskRepo.persist(Task(dto, adminUserId)).awaitSuspending()
+    ): Either<GlobalException, Task> = taskRepo.create(Task(dto, adminUserId))
+
+    suspend fun findByObjId(id: ObjectId): Either<GlobalException, Task> = taskRepo.findByObjId(id)
 
     suspend fun updateTaskState(task: Task, newState: TaskState, userId: ObjectId): Task? {
         return taskRepo.findOneByIdAndUpdateState(task, newState, userId)
@@ -51,13 +54,14 @@ class TaskService {
     suspend fun listTaskPageWithFilter(pageReq: PageRequest, keyword: String?, since: Long?, until: Long?): List<Task> {
         val page = pageReq.page
         val show = pageReq.show
+        val searchKey = keyword?.takeIf { it.isNotBlank() } ?: ""
         val startDate = since?.let { Instant.ofEpochMilli(it) } ?: Instant.ofEpochMilli(0)
         val endDate = until?.let { Instant.ofEpochMilli(it) } ?: Instant.ofEpochMilli(32472115200000)
 
         return taskRepo.find(
             "${Task::title.name} like ?1 or ${Task::description.name} like ?2 "
                     + "and ${Task::createdTime.name} >= ?3 and ${Task::createdTime.name} <= ?4",
-            keyword, keyword, startDate, endDate
+            searchKey, searchKey, startDate, endDate
         )
             .page(page - 1, show).list()
             .awaitSuspending()
