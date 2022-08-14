@@ -2,6 +2,7 @@ package com.steven.resource
 
 import com.steven.constant.ApiError
 import com.steven.exception.ApiNotFoundException
+import com.steven.exception.GlobalException
 import com.steven.model.dto.PageRequest
 import com.steven.model.dto.TaskCreateDTO
 import com.steven.model.po.task.Task
@@ -18,6 +19,7 @@ import javax.security.auth.login.LoginException
 import javax.validation.Valid
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 
 /**
@@ -46,34 +48,42 @@ class TaskResource {
      * admin create a new [Task]
      *
      * @param dto [TaskCreateDTO]
-     * @return created [Task]
+     * @return [Response] created [Task] or fail with [GlobalException]
      */
     @POST
     @Path("create")
     suspend fun create(
         @Valid dto: TaskCreateDTO
-    ): Task {
+    ): Response? {
         logger.info("[create] title: ${dto.title}, dto: $dto")
 
         val userId = checkLogin() ?: throw LoginException("admin not login!!")
         val adminUserId = dto.userId ?: userId
 
-        return taskService.creatTaskByDto(dto, adminUserId)
+        return taskService.creatTaskByDto(dto, adminUserId).fold(
+            ifRight = { Response.ok(it).status(201).build() },
+            ifLeft = { err -> GlobalException.toResponse(err) }
+        )
     }
 
     /**
      * 管理員後台-取得代辦事項詳情
      * @param taskId [Task.id]
-     * @return [Task]
+     * @return [Response] query [Task] or [GlobalException] if not found
      *
      */
     @GET
     @Path("{taskId}")
     suspend fun getTask(
         @RestPath taskId: ObjectId
-    ): Task? = taskRepo.findById(taskId).awaitSuspending()
+    ): Response =
+        taskService.findByObjId(taskId).fold(
+            ifRight = { fruit -> Response.ok(fruit).build() },
+            ifLeft = { err -> GlobalException.toResponse(err) }
+        )
 
     /**
+     * TODO refactor to Arrow
      * 管理員後台-代辦事項列表
      */
     @GET
@@ -96,6 +106,7 @@ class TaskResource {
     }
 
     /**
+     * TODO refactor to Arrow
      * 更新代辦事項
      *
      * @param taskId [Task.id]

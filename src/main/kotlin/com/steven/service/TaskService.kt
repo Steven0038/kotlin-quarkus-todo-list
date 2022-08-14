@@ -1,5 +1,7 @@
 package com.steven.service
 
+import arrow.core.Either
+import com.steven.exception.GlobalException
 import com.steven.model.dto.PageRequest
 import com.steven.model.dto.TaskCreateDTO
 import com.steven.model.po.task.Task
@@ -26,14 +28,16 @@ class TaskService {
      * admin create initial [Task]
      *
      * @param dto [TaskCreateDTO]
-     * @param adminUserId [User.id]
+     * @param adminUserId
      *
      * @return [Task]
      */
     suspend fun creatTaskByDto(
         dto: TaskCreateDTO,
         adminUserId: ObjectId
-    ): Task = taskRepo.persist(Task(dto, adminUserId)).awaitSuspending()
+    ): Either<GlobalException, Task> = taskRepo.create(Task(dto, adminUserId))
+
+    suspend fun findByObjId(id: ObjectId): Either<GlobalException, Task> = taskRepo.findByObjId(id)
 
     suspend fun updateTaskState(task: Task, newState: TaskState, userId: ObjectId): Task? {
         return taskRepo.findOneByIdAndUpdateState(task, newState, userId)

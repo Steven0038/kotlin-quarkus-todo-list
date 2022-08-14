@@ -17,7 +17,7 @@ Content-Type: application/json;charset=utf-8
 ###
 ## 取得單一 task
 #GET api/task/{Task.id}
-GET http://localhost:8080/api/task/62f729fad7f4390fb1801e63
+GET http://localhost:8080/api/task/62f7a489726c3745240bcfa0
 Content-Type: application/json;charset=utf-8
 
 ###
