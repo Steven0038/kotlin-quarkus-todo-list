@@ -52,8 +52,6 @@ class TaskService {
      * @return [Task]
      */
     suspend fun listTaskPageWithFilter(pageReq: PageRequest, keyword: String?, since: Long?, until: Long?): List<Task> {
-        val page = pageReq.page
-        val show = pageReq.show
         val searchKey = keyword?.takeIf { it.isNotBlank() } ?: ""
         val startDate = since?.let { Instant.ofEpochMilli(it) } ?: Instant.ofEpochMilli(0)
         val endDate = until?.let { Instant.ofEpochMilli(it) } ?: Instant.ofEpochMilli(32472115200000)
@@ -63,7 +61,7 @@ class TaskService {
                     + "and ${Task::createdTime.name} >= ?3 and ${Task::createdTime.name} <= ?4",
             searchKey, searchKey, startDate, endDate
         )
-            .page(page - 1, show).list()
+            .page(pageReq.page - 1, pageReq.show).list()
             .awaitSuspending()
     }
 

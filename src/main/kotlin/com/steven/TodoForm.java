@@ -13,17 +13,10 @@ public class TodoForm {
     public @FormParam("priority") @PartType(MediaType.TEXT_PLAIN) int priority;
 
     public Todo convertIntoTodo() {
-//        Todo todo = new Todo();
-//        todo.title = title;
-//        todo.completed = "on".equals(completed);
-//        todo.priority = priority;
         return new Todo(this);
     }
 
     public Todo updateTodo(Todo toUpdate) {
-//        toUpdate.title = title;
-//        toUpdate.completed = "on".equals(completed);
-//        toUpdate.priority = priority;
         return new Todo(toUpdate, this);
     }
 }
