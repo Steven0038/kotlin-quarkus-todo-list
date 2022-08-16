@@ -23,15 +23,13 @@ import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
-@CheckedTemplate(requireTypeSafeExpressions = false) // FIXME
 @ExperimentalCoroutinesApi
 @Path("/todo")
 class TodoResource {
 
     @CheckedTemplate
     object Templates {
-//        @JvmStatic external fun error(message: String): TemplateInstance // FIXME
-        @JvmStatic external fun error(): TemplateInstance
+        @JvmStatic external fun error(message: String): TemplateInstance // FIXME
         @JvmStatic external fun todo(todo: Todo, priorities: List<Int>, update: Boolean): TemplateInstance
         @JvmStatic external fun todos(todos: List<Todo>, totalCount: Long, priorities: List<Int>, filter: String, filtered: Boolean): TemplateInstance
     }
@@ -45,13 +43,16 @@ class TodoResource {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Path("/new")
-    suspend fun addTodo(@MultipartForm todoForm: TodoForm): Response? { // data class unable accept form data
+    suspend fun addTodo(@MultipartForm todoForm: TodoForm): Any? { // data class unable accept form data
         val todo: Todo = todoForm.convertIntoTodo()
-        todoService.creatTaskByDto(todo)
-
-        return Response.status(Response.Status.SEE_OTHER)
-            .location(URI.create("/todo"))
-            .build()
+        return todoService.creatTaskByDto(todo).fold(
+            ifRight = {
+                Response.status(Response.Status.SEE_OTHER)
+                    .location(URI.create("/todo"))
+                    .build()
+            },
+            ifLeft = { Templates.error("add fail") }
+        )
     }
 
     @GET
@@ -86,8 +87,7 @@ class TodoResource {
     suspend fun updateForm(@PathParam("id") id: String): TemplateInstance {
         return todoService.findByObjId(ObjectId(id)).fold(
             ifRight = { loaded -> Templates.todo(loaded, priorities, true) },
-//            ifLeft = { Templates.error("Todo with id $id does not exist.") } // FIXME
-            ifLeft = { Templates.error() }
+            ifLeft = { exception ->  Templates.error("Todo with id $id does not exist.") }
         )
     }
 

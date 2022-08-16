@@ -6,8 +6,6 @@ import com.steven.exception.GlobalException
 import com.steven.model.dto.PageRequest
 import com.steven.model.po.task.Task
 import com.steven.repository.TodoRepository
-import io.quarkus.panache.common.Sort
-import io.smallrye.mutiny.coroutines.awaitSuspending
 import org.bson.types.ObjectId
 import java.time.Instant
 import javax.inject.Inject
@@ -27,10 +25,6 @@ class TodoService {
 
     suspend fun findByObjId(id: ObjectId): Either<GlobalException, Todo> = todoRepo.findByObjId(id)
 
-    val sort: Sort = Sort.ascending("completed")
-        .and("priority", Sort.Direction.Descending)
-        .and("title", Sort.Direction.Ascending)
-
     /**
      * list task with query filter
      *
@@ -41,33 +35,16 @@ class TodoService {
      * @return [Task]
      */
     suspend fun listTaskPageWithFilter(pageReq: PageRequest, keyword: String?, since: Long?, until: Long?): List<Todo> {
-        val page = pageReq.page
-        val show = pageReq.show
         val searchKey = keyword?.takeIf { it.isNotBlank() } ?: ""
         val startDate = since?.let { Instant.ofEpochMilli(it) } ?: Instant.ofEpochMilli(0)
         val endDate = until?.let { Instant.ofEpochMilli(it) } ?: Instant.ofEpochMilli(32472115200000)
 
-        return todoRepo.find(
-            "${Todo::title.name} like ?1"
-                    + "and ${Todo::createdTime.name} >= ?2 and ${Todo::createdTime.name} <= ?3",
-            sort,
-            searchKey, startDate, endDate
-        )
-            .page(page - 1, show).list()
-            .awaitSuspending()
+        return todoRepo.findPagesByFilter(pageReq, searchKey, startDate, endDate)
     }
 
-    suspend fun listTaskWithFilter(keyword: String?): List<Todo> {
-        val searchKey = keyword?.takeIf { it.isNotBlank() } ?: ""
-        return todoRepo.find(
-            "${Todo::title.name} like ?1",
-            sort,
-            searchKey
-        ).list().awaitSuspending()
-    }
+    suspend fun listTaskWithFilter(keyword: String?): List<Todo> =
+        todoRepo.findByFilter(keyword?.takeIf { it.isNotBlank() } ?: "")
 
-    suspend fun updateTodo(todo: Todo): Todo? {
-        return todoRepo.findOneByIdAndUpdate(todo)
-    }
+    suspend fun updateTodo(todo: Todo): Todo? = todoRepo.findOneByIdAndUpdate(todo)
 
 }
