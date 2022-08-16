@@ -1,0 +1,13 @@
+<!--ref: https://github.com/gunnarmorling/quarkus-qute-->
+{#include base.html}
+    {#title}Uh Oh{/title}
+    {#contents}
+        <div class="modalenabled">
+        <div class="alert alert-danger" role="alert">
+        {!{error}!}
+            Todo with this id does not exist.
+        </div>
+        <a class="btn btn-primary" href="/todo" role="button">Home</a>
+        </div>
+    {/contents}
+{/include}
