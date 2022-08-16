@@ -1,4 +1,4 @@
-package com.steven.resource
+package com.steven.resource.api
 
 import com.steven.constant.ApiError
 import com.steven.exception.ApiNotFoundException

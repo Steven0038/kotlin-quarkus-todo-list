@@ -4,6 +4,7 @@ import com.steven.Todo
 import com.steven.TodoForm
 import com.steven.constant.ApiError
 import com.steven.exception.ApiNotFoundException
+import com.steven.exception.GlobalException
 import com.steven.model.dto.PageRequest
 import com.steven.repository.TodoRepository
 import com.steven.service.TodoService
@@ -23,15 +24,13 @@ import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
-@CheckedTemplate(requireTypeSafeExpressions = false) // FIXME
 @ExperimentalCoroutinesApi
 @Path("/todo")
 class TodoResource {
 
     @CheckedTemplate
     object Templates {
-//        @JvmStatic external fun error(message: String): TemplateInstance // FIXME
-        @JvmStatic external fun error(): TemplateInstance
+        @JvmStatic external fun error(message: String): TemplateInstance // FIXME
         @JvmStatic external fun todo(todo: Todo, priorities: List<Int>, update: Boolean): TemplateInstance
         @JvmStatic external fun todos(todos: List<Todo>, totalCount: Long, priorities: List<Int>, filter: String, filtered: Boolean): TemplateInstance
     }
@@ -45,13 +44,16 @@ class TodoResource {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Path("/new")
-    suspend fun addTodo(@MultipartForm todoForm: TodoForm): Response? { // data class unable accept form data
+    suspend fun addTodo(@MultipartForm todoForm: TodoForm): Any? { // data class unable accept form data
         val todo: Todo = todoForm.convertIntoTodo()
-        todoService.creatTaskByDto(todo)
-
-        return Response.status(Response.Status.SEE_OTHER)
-            .location(URI.create("/todo"))
-            .build()
+        return todoService.creatTaskByDto(todo).fold(
+            ifRight = {
+                Response.status(Response.Status.SEE_OTHER)
+                    .location(URI.create("/todo"))
+                    .build()
+            },
+            ifLeft = { Templates.error("add fail")  }
+        )
     }
 
     @GET
@@ -63,21 +65,28 @@ class TodoResource {
         @QueryParam("since") since: Long?,
         @QueryParam("until") until: Long?
     ): TemplateInstance {
-        val tasks = todoService.listTaskPageWithFilter(pageReq, filter, since, until)
-        return Templates.todos(
-            tasks,
-            tasks.size.toLong(),
-            priorities,
-            filter ?: "",
-            filter != null && filter.isNotEmpty()
+        return todoService.listTaskPageWithFilter(pageReq, filter, since, until).fold(
+            ifRight = {
+                Templates.todos(
+                    it,
+                    it.size.toLong(),
+                    priorities,
+                    filter ?: "",
+                    filter != null && filter.isNotEmpty()
+                )
+            },
+            ifLeft = { Templates.error("query fail, ${it.e}") }
         )
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    suspend fun listTodosJson(@QueryParam("filter") filter: String?): List<Todo> {
-        return todoService.listTaskWithFilter(filter)
+    suspend fun listTodosJson(@QueryParam("filter") filter: String?): Response {
+        return todoService.listTaskWithFilter(filter).fold(
+            ifRight = { todos ->  Response.ok(todos).build() },
+            ifLeft = { err -> GlobalException.toResponse(err)}
+        )
     }
 
     @GET
@@ -86,8 +95,7 @@ class TodoResource {
     suspend fun updateForm(@PathParam("id") id: String): TemplateInstance {
         return todoService.findByObjId(ObjectId(id)).fold(
             ifRight = { loaded -> Templates.todo(loaded, priorities, true) },
-//            ifLeft = { Templates.error("Todo with id $id does not exist.") } // FIXME
-            ifLeft = { Templates.error() }
+            ifLeft = { exception ->  Templates.error("Todo with id $id does not exist.") }
         )
     }
 
@@ -97,16 +105,15 @@ class TodoResource {
     suspend fun updateTodo(
         @PathParam("id") id: String,
         @MultipartForm todoForm: TodoForm
-    ): Any? {
-        val oriTask = todoRepo.findById(ObjectId(id)).awaitSuspending()
-            ?: throw ApiNotFoundException(ApiError.ENTITY_NOT_FOUND, "not found!!!")
-
-        val toUpdate = todoForm.updateTodo(oriTask)
-        toUpdate.update<Todo>().awaitSuspending()
-
-        return Response.status(301)
-            .location(URI.create("/todo"))
-            .build()
+    ): Any {
+        return todoService.findOneAndUpdate(ObjectId(id), todoForm).fold(
+            ifRight = {
+                Response.status(301)
+                    .location(URI.create("/todo"))
+                    .build()
+            },
+            ifLeft = { exception -> Templates.error("Todo update with id $id fail.") }
+        )
     }
 
     @POST
