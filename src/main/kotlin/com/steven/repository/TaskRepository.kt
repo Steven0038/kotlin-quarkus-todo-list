@@ -32,9 +32,9 @@ class TaskRepository : BaseMongoRepository<Task>() {
     suspend fun findByObjId(id: ObjectId): Either<GlobalException, Task> = Either.catch {
         this.findOne(Filters.eq(id)).toOption()
     }.mapLeft { GlobalException.DatabaseProblem(it) }
-        .flatMap { fruitOptionToEither(it, id) }
+        .flatMap { taskOptionToEither(it, id) }
 
-    private val fruitOptionToEither: suspend (maybeFruit: Option<Task>, id: ObjectId) -> Either<GlobalException, Task> =
+    private val taskOptionToEither: suspend (maybeFruit: Option<Task>, id: ObjectId) -> Either<GlobalException, Task> =
         { taskOptional, id -> taskOptional.toEither { GlobalException.NotFoundId(id) } }
 
     suspend fun findOneByIdAndUpdateState(task: Task, newState: TaskState, userId: ObjectId): Task? {

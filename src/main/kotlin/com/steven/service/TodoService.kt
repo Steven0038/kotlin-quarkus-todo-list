@@ -1,7 +1,9 @@
 package com.steven.service
 
 import arrow.core.Either
+import arrow.core.flatMap
 import com.steven.Todo
+import com.steven.TodoForm
 import com.steven.exception.GlobalException
 import com.steven.model.dto.PageRequest
 import com.steven.model.po.task.Task
@@ -34,7 +36,7 @@ class TodoService {
      * @param until [Long] EpochMilli
      * @return [Task]
      */
-    suspend fun listTaskPageWithFilter(pageReq: PageRequest, keyword: String?, since: Long?, until: Long?): List<Todo> {
+    suspend fun listTaskPageWithFilter(pageReq: PageRequest, keyword: String?, since: Long?, until: Long?): Either<GlobalException.DatabaseProblem, List<Todo>> {
         val searchKey = keyword?.takeIf { it.isNotBlank() } ?: ""
         val startDate = since?.let { Instant.ofEpochMilli(it) } ?: Instant.ofEpochMilli(0)
         val endDate = until?.let { Instant.ofEpochMilli(it) } ?: Instant.ofEpochMilli(32472115200000)
@@ -42,9 +44,10 @@ class TodoService {
         return todoRepo.findPagesByFilter(pageReq, searchKey, startDate, endDate)
     }
 
-    suspend fun listTaskWithFilter(keyword: String?): List<Todo> =
+    suspend fun listTaskWithFilter(keyword: String?): Either<GlobalException.DatabaseProblem, List<Todo>> =
         todoRepo.findByFilter(keyword?.takeIf { it.isNotBlank() } ?: "")
 
-    suspend fun updateTodo(todo: Todo): Todo? = todoRepo.findOneByIdAndUpdate(todo)
+    suspend fun findOneAndUpdate(id: ObjectId, todoForm: TodoForm) = this.findByObjId(id).flatMap { todo -> todoRepo.updateTodo(todoForm.updateTodo(todo)) }
+
 
 }
