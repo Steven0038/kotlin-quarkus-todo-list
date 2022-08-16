@@ -1,5 +1,23 @@
 # todolist Project
 
+simple todolist project with GUI, 
+
+tech stack
+- Kotlin
+- Quarkus
+- Arrrow
+- quarkus qute template for GUI
+- Unit test ( only for restful apis)
+- Open API ( only for restful apis)
+- mongo DB
+
+## Reference
+- arrow
+https://github.com/hmchangm/quarkus-reactive-kotlin
+- qute https://github.com/gunnarmorling/quarkus-qute ( Apache-2.0 license)
+  - including /resource/templates*
+
+---
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
