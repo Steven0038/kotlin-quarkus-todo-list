@@ -17,6 +17,7 @@
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>2.1.0.Final</quarkus.platform.version>
     <arrow.version>1.0.0</arrow.version>
+    <kotest.version>5.4.2</kotest.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
   </properties>
   <dependencyManagement>
@@ -125,6 +126,24 @@
       <groupId>io.arrow-kt</groupId>
       <artifactId>arrow-fx-coroutines</artifactId>
       <version>${arrow.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.kotest</groupId>
+      <artifactId>kotest-runner-junit5-jvm</artifactId>
+      <version>${kotest.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.kotest</groupId>
+      <artifactId>kotest-assertions-core-jvm</artifactId>
+      <version>${kotest.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.kotest</groupId>
+      <artifactId>kotest-property-jvm</artifactId>
+      <version>${kotest.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
