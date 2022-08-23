@@ -44,8 +44,8 @@ class TodoRepositoryTest {
             val resultEither = todoCreate.run { todoDao.create(this) }
             resultEither.map { Assertions.assertEquals(it.title, todoCreate.title) }
             resultEither.fold( ifRight = { it.title.shouldBe(todoCreate.title) }, ifLeft = { it.shouldBeInstanceOf<GlobalException.DatabaseProblem>() })
-            resultEither.fold( ifRight = { it.title.shouldBe(todoCreate.completed) }, ifLeft = { it.shouldBeInstanceOf<GlobalException.DatabaseProblem>() })
-            resultEither.fold( ifRight = { it.title.shouldBe(todoCreate.priority) }, ifLeft = { it.shouldBeInstanceOf<GlobalException.DatabaseProblem>() })
+            resultEither.fold( ifRight = { it.completed.shouldBe(todoCreate.completed) }, ifLeft = { it.shouldBeInstanceOf<GlobalException.DatabaseProblem>() })
+            resultEither.fold( ifRight = { it.priority.shouldBe(todoCreate.priority) }, ifLeft = { it.shouldBeInstanceOf<GlobalException.DatabaseProblem>() })
         }
     }
 
