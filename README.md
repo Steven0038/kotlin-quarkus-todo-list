@@ -1,21 +1,40 @@
-# todolist Project
+# todo-list project
 
-simple todolist project with GUI, 
+this is a simple todolist project
 
-tech stack
+##features
+- quarkus based PanacheMongo CRUD with restful api
+- simple GUI with qute
+- kotlin functional programming with Arrow
+
+## Tech stack
 - Kotlin
 - Quarkus
 - Arrrow
 - quarkus qute template for GUI
-- Unit test ( only for restful apis)
+- Unit test ( not full covered)
+  - ktest
+  - junit
 - Open API ( only for restful apis)
-- mongo DB
+- mongo DB 
 
-## Reference
-- arrow
-https://github.com/hmchangm/quarkus-reactive-kotlin
-- qute https://github.com/gunnarmorling/quarkus-qute ( Apache-2.0 license)
+## Build and Version
+### version
+- openJDK 17
+- kotlin 1.7.1
+- quarkus 2.1.0.Final
+
+### db connecting string
+```see application.properties```
+
+
+## References
+- [arrow demo by hmchangm](https://github.com/hmchangm/quarkus-reactive-kotlin)
+- [qute demo by gunnarmorling](https://github.com/gunnarmorling/quarkus-qute) ( Apache-2.0 license)
   - including /resource/templates*
+
+## Licence
+Apache-2.0 license
 
 ---
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
