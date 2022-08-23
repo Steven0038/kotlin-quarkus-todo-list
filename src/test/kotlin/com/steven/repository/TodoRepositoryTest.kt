@@ -1,6 +1,6 @@
 package com.steven.repository
 
-import com.steven.Todo
+import com.steven.model.po.Todo
 import com.steven.exception.GlobalException
 import com.steven.model.dto.PageRequest
 import io.kotest.matchers.date.shouldBeBetween

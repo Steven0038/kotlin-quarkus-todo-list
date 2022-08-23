@@ -2,8 +2,8 @@ package com.steven.service
 
 import arrow.core.Either
 import arrow.core.flatMap
-import com.steven.Todo
-import com.steven.TodoForm
+import com.steven.model.po.Todo
+import com.steven.model.dto.TodoForm
 import com.steven.exception.GlobalException
 import com.steven.model.dto.PageRequest
 import com.steven.model.po.task.Task

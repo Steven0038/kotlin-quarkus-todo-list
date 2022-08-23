@@ -1,7 +1,7 @@
 package com.steven.resource
 
-import com.steven.Todo
-import com.steven.TodoForm
+import com.steven.model.po.Todo
+import com.steven.model.dto.TodoForm
 import com.steven.constant.ApiError
 import com.steven.exception.ApiNotFoundException
 import com.steven.exception.GlobalException
