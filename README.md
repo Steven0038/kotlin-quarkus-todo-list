@@ -2,7 +2,7 @@
 
 this is a simple todolist project
 
-##features
+## features
 - quarkus based PanacheMongo CRUD with restful api
 - simple GUI with qute
 - kotlin functional programming with Arrow
