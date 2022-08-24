@@ -1,6 +1,6 @@
 # todo-list project
 
-this is a simple todolist project
+this is a simple todolist project, with basic todo item crud apis and GUI
 
 ## features
 - quarkus based PanacheMongo CRUD with restful api
@@ -27,6 +27,11 @@ this is a simple todolist project
 ### db connecting string
 ```see application.properties```
 
+### visit the home page
+``` localhost:8080/todo ```
+
+### visit the open api page
+``` localhost:8080/q/swagger-ui/#/ ```
 
 ## References
 - [arrow demo by hmchangm](https://github.com/hmchangm/quarkus-reactive-kotlin)
