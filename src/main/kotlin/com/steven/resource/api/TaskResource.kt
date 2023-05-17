@@ -31,7 +31,8 @@ import javax.ws.rs.core.Response
 /**
  * FIXME: note, direct usage of entity object id in rest path is dangerous
  * TODO: authentication
- * 代辦管理 APIs
+ * restful task APIs, just for the purpose of demonstration open API,
+ * it use dependents collection in DB and not shown in the todolist UI
  */
 @ExperimentalCoroutinesApi
 @Path("api/task")
@@ -49,7 +50,6 @@ class TaskResource {
     private lateinit var taskService: TaskService
 
     /**
-     * 新增代辦事項
      * admin create a new [Task]
      * @param dto [TaskCreateDTO]
      * @return [Response] created [Task] or fail with [GlobalException]
@@ -83,7 +83,7 @@ class TaskResource {
     }
 
     /**
-     * 取得代辦事項詳情
+     * get the detail of a task by id
      * @param taskId [Task.id]
      * @return [Response] query [Task] or [GlobalException] if not found
      */
@@ -99,7 +99,7 @@ class TaskResource {
 
     /**
      * TODO refactor to Arrow
-     * 代辦事項列表
+     * list task list by keyword filter
      */
     @GET
     @Path("list")
